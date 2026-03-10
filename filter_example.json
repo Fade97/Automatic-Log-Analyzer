@@ -1,0 +1,26 @@
+[
+    {
+        "name": "kernel panic",
+        "filters": [
+            {
+                "filter": "kernel panic",
+                "regex": false,
+                "case_sensitive": false,
+                "word_match": false
+            }
+        ],
+        "criticality": "high"
+    },
+    {
+        "name": "blocking process",
+        "filters": [
+            {
+                "filter": "blocked for more than .* seconds",
+                "regex": true,
+                "case_sensitive": false,
+                "word_match": false
+            }
+        ],
+        "criticality": "medium"
+    }
+]
