@@ -4,6 +4,8 @@ filter.json
 .vscode/
 .vscode/*
 .vscode/**
+
+.claude/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

@@ -1,7 +1,5 @@
 import argparse
-from ast import parse
 import json
-from pprint import pprint
 import re
 from collections import namedtuple, Counter
 from enum import Enum
@@ -77,9 +75,8 @@ def analyze_log(log_file, filter_groups, criticality, line_counter):
                         break  # one match per group per line is enough
 
 
-def json_output(matches, ram_samples):
+def json_output(matches, ram_samples, stats=False, lines_scanned=0):
     filter_map = {}  # name -> id
-    match_counts = 0
     match_counts = Counter()
 
     for _, name, criticality, _ in matches:
@@ -101,13 +98,13 @@ def json_output(matches, ram_samples):
             for line_num, name, _, line in matches
         ],
     }
-    if args.s:
+    if stats:
         total_matches = sum(match_counts.values())
 
         output_json.update(
             {
                 "stats": {
-                    "lines_scanned": line_counter[0],
+                    "lines_scanned": lines_scanned,
                     "total_matches": total_matches,
                     "filter_matches": [
                         {
@@ -140,7 +137,7 @@ def json_output(matches, ram_samples):
     print(json.dumps(output_json, indent=2))
 
 
-def user_output(matches, ram_samples):
+def user_output(matches, ram_samples, filter_groups, stats=False, lines_scanned=0):
     name_width = max((len(g.name) for g in filter_groups), default=0)
     crit_width = max(len(e.name) for e in enum_criticality)
     line_num_width = len(str(matches[-1][0])) if matches else 1
@@ -153,10 +150,10 @@ def user_output(matches, ram_samples):
         print(
             f"{COLORS['low']}l{line_num:{line_num_width}}{COLORS['reset']} [{criticality_text}] ({name:{name_width}}): {line}")
 
-    if args.s:
+    if stats:
         total_matches = sum(match_counts.values())
         print(f"\n--- Stats ---")
-        print(f"Lines scanned : {line_counter[0]}")
+        print(f"Lines scanned : {lines_scanned}")
         print(f"Total matches : {total_matches}")
         for (name, crit), count in match_counts.items():
             color = COLORS.get(crit.lower(), "")
@@ -218,6 +215,6 @@ if __name__ == "__main__":
     sampler.join()
 
     if args.json:
-        json_output(matches, ram_samples)
+        json_output(matches, ram_samples, stats=args.s, lines_scanned=line_counter[0])
     else:
-        user_output(matches, ram_samples)
+        user_output(matches, ram_samples, filter_groups, stats=args.s, lines_scanned=line_counter[0])
