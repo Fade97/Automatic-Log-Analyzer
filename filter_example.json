@@ -1,10 +1,10 @@
 [
     {
-        "name": "kernel panic",
+        "name": "Connections",
         "filters": [
             {
-                "filter": "kernel panic",
-                "regex": false,
+                "filter": "connection from .* at",
+                "regex": true,
                 "case_sensitive": false,
                 "word_match": false
             }
@@ -12,11 +12,23 @@
         "criticality": "high"
     },
     {
-        "name": "blocking process",
+        "name": "Sessions",
         "filters": [
             {
-                "filter": "blocked for more than .* seconds",
+                "filter": "session opened for user .*",
                 "regex": true,
+                "case_sensitive": false,
+                "word_match": false
+            }
+        ],
+        "criticality": "high"
+    },
+    {
+        "name": "Alert",
+        "filters": [
+            {
+                "filter": "ALERT",
+                "regex": false,
                 "case_sensitive": false,
                 "word_match": false
             }

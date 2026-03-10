@@ -24,7 +24,7 @@ COLORS = {
     "low": "\033[37m"
 }
 
-enum_criticality = Enum("Criticality", ["HIGH", "MEDIUM", "LOW"])
+enum_criticality = Enum("Criticality", ["LOW", "MEDIUM", "HIGH"])
 
 filters_file = "filter.json"
 
@@ -305,6 +305,8 @@ if __name__ == "__main__":
     sampler.join()
 
     if args.json:
-        json_output(matches, ram_samples, stats=args.s, lines_scanned=line_counter[0])
+        json_output(matches, ram_samples, stats=args.s,
+                    lines_scanned=line_counter[0])
     else:
-        user_output(matches, ram_samples, filter_groups, stats=args.s, lines_scanned=line_counter[0])
+        user_output(matches, ram_samples, filter_groups,
+                    stats=args.s, lines_scanned=line_counter[0])

@@ -4,6 +4,7 @@ filter.json
 .vscode/
 .vscode/*
 .vscode/**
+release_notes/
 
 .claude/
 # Byte-compiled / optimized / DLL files
