@@ -83,6 +83,8 @@ class TestJsonOutput:
         assert data["stats"]["ram_usage"]["unit"] == "kb"
         assert data["stats"]["ram_usage"]["min"] == pytest.approx(1.0)
         assert data["stats"]["ram_usage"]["max"] == pytest.approx(3.0)
+        assert data["stats"]["lines_scanned"] == 10
+        assert data["stats"]["total_matches"] == 1
 
 
 # ---------------------------------------------------------------------------

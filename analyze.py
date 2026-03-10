@@ -229,18 +229,12 @@ def json_output(matches, ram_samples, stats=False, lines_scanned=0):
             max_ram = max(ram_samples) * to_kb
             avg_ram = sum(ram_samples) / len(ram_samples) * to_kb
 
-            output_json.update(
-                {
-                    "stats": {
-                        "ram_usage": {
-                            "min": min_ram,
-                            "avg": avg_ram,
-                            "max": max_ram,
-                            "unit": "kb"
-                        }
-                    }
-                }
-            )
+            output_json["stats"]["ram_usage"] = {
+                "min": min_ram,
+                "avg": avg_ram,
+                "max": max_ram,
+                "unit": "kb"
+            }
     print(json.dumps(output_json, indent=2))
 
 
