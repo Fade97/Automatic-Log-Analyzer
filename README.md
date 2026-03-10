@@ -85,6 +85,32 @@ The RAM line shows `min | avg | max` memory usage sampled across the run.
 
 Each filter name appears once in `"filters"`. Matches reference filters by `filter_id` to avoid repeating the name. With `-s`, a `"stats"` key is added containing line count, total matches, per-filter match counts, and RAM usage.
 
+## Building from source
+
+Compile to a standalone Windows `.exe` using [PyInstaller](https://pyinstaller.org):
+
+```bash
+pip install pyinstaller
+pyinstaller --onefile --name log-analyzer analyze.py
+```
+
+The executable is written to `dist\log-analyzer.exe`. Run it the same way as the Python script:
+
+```
+log-analyzer.exe system.log --criticality medium -s
+```
+
+A pre-built Windows executable is attached to each [GitHub Release](../../releases).
+
+## Development
+
+Install test dependencies and run the test suite:
+
+```bash
+pip install pytest
+pytest -v
+```
+
 ## Filter Configuration
 
 Filters are defined in a JSON file (default: `filter.json`). The file contains an array of filter groups:
