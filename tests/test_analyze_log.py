@@ -55,13 +55,14 @@ def test_multiple_matches_across_lines(log_file, sample_groups):
     assert results[1][0] == 3
 
 
-def test_criticality_threshold_excludes_higher_severity(log_file, sample_groups):
+def test_criticality_threshold_excludes_lower_severity(log_file, sample_groups):
     # "kernel panic" has criticality="high" (enum value=1)
     # threshold="medium" (enum value=2): 1 >= 2 is False → not yielded
-    path = log_file(["kernel panic occurred"])
+    path = log_file(
+        ["kernel panic occurred", "blocked for more than 25 seconds"])
     counter = [0]
-    results = list(analyze_log(path, sample_groups, "medium", counter))
-    assert results == []
+    results = list(analyze_log(path, sample_groups, "high", counter))
+    assert len(results) == 1 and results[0][3] == "kernel panic occurred"
 
 
 def test_criticality_threshold_includes_matching_severity(log_file, sample_groups):

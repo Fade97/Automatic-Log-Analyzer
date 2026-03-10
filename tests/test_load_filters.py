@@ -1,5 +1,7 @@
 import json
+import re
 import pytest
+import jsonschema
 from analyze import Filter, FilterGroup, load_filters
 
 
@@ -57,7 +59,8 @@ def test_multiple_filters_in_group(tmp_path):
 def test_empty_array(tmp_path):
     p = tmp_path / "empty.json"
     p.write_text("[]")
-    assert load_filters(str(p)) == []
+    with pytest.raises(jsonschema.ValidationError):
+        load_filters(str(p))
 
 
 def test_file_not_found():
@@ -70,3 +73,51 @@ def test_invalid_json(tmp_path):
     p.write_text("{not valid json")
     with pytest.raises(json.JSONDecodeError):
         load_filters(str(p))
+
+
+_VALID_FILTER = {"filter": "a", "regex": False, "case_sensitive": False, "word_match": False}
+
+
+def test_missing_name_field(tmp_path):
+    data = [{"criticality": "high", "filters": [_VALID_FILTER]}]
+    with pytest.raises(jsonschema.ValidationError):
+        load_filters(write_json(tmp_path, data))
+
+
+def test_invalid_criticality_value(tmp_path):
+    data = [{"name": "g", "criticality": "critical", "filters": [_VALID_FILTER]}]
+    with pytest.raises(jsonschema.ValidationError):
+        load_filters(write_json(tmp_path, data))
+
+
+def test_missing_filter_key(tmp_path):
+    data = [{"name": "g", "criticality": "high",
+             "filters": [{"regex": False, "case_sensitive": False, "word_match": False}]}]
+    with pytest.raises(jsonschema.ValidationError):
+        load_filters(write_json(tmp_path, data))
+
+
+def test_filter_regex_wrong_type(tmp_path):
+    data = [{"name": "g", "criticality": "high",
+             "filters": [{"filter": "a", "regex": "yes", "case_sensitive": False, "word_match": False}]}]
+    with pytest.raises(jsonschema.ValidationError):
+        load_filters(write_json(tmp_path, data))
+
+
+def test_additional_property_on_group(tmp_path):
+    data = [{"name": "g", "criticality": "high", "filters": [_VALID_FILTER], "priority": 1}]
+    with pytest.raises(jsonschema.ValidationError):
+        load_filters(write_json(tmp_path, data))
+
+
+def test_empty_filters_array(tmp_path):
+    data = [{"name": "g", "criticality": "high", "filters": []}]
+    with pytest.raises(jsonschema.ValidationError):
+        load_filters(write_json(tmp_path, data))
+
+
+def test_invalid_regex_pattern(tmp_path):
+    data = [{"name": "g", "criticality": "high",
+             "filters": [{"filter": "[", "regex": True, "case_sensitive": False, "word_match": False}]}]
+    with pytest.raises(re.error):
+        load_filters(write_json(tmp_path, data))

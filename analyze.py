@@ -17,6 +17,8 @@ import threading
 from time import sleep
 import tracemalloc
 
+import jsonschema
+
 COLORS = {
     "reset": "\033[0m",
     "high": "\033[31m",
@@ -25,6 +27,33 @@ COLORS = {
 }
 
 enum_criticality = Enum("Criticality", ["LOW", "MEDIUM", "HIGH"])
+
+_FILTER_SCHEMA = {
+    "type": "array", "minItems": 1,
+    "items": {
+        "type": "object",
+        "required": ["name", "filters", "criticality"],
+        "additionalProperties": False,
+        "properties": {
+            "name": {"type": "string", "minLength": 1},
+            "criticality": {"type": "string", "enum": ["low", "medium", "high"]},
+            "filters": {
+                "type": "array", "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "required": ["filter", "regex", "case_sensitive", "word_match"],
+                    "additionalProperties": False,
+                    "properties": {
+                        "filter": {"type": "string", "minLength": 1},
+                        "regex": {"type": "boolean"},
+                        "case_sensitive": {"type": "boolean"},
+                        "word_match": {"type": "boolean"}
+                    }
+                }
+            }
+        }
+    }
+}
 
 filters_file = "filter.json"
 
@@ -88,9 +117,16 @@ def load_filters(filters_file):
     Raises:
         FileNotFoundError: If the file does not exist.
         json.JSONDecodeError: If the file is not valid JSON.
+        jsonschema.ValidationError: If the file does not conform to the filter schema.
+        re.error: If a filter with regex=True contains an invalid regular expression.
     """
     with open(filters_file, "r") as f:
         data = json.load(f)
+    jsonschema.validate(data, _FILTER_SCHEMA)
+    for group in data:
+        for filt in group["filters"]:
+            if filt["regex"]:
+                re.compile(filt["filter"])
     groups = []
     for group in data:
         filter_objs = [
