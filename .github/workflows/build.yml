@@ -27,7 +27,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Build executable
-        run: pyinstaller --onefile --name log-analyzer analyze.py
+        run: pyinstaller --onefile --name log-analyzer --hidden-import jsonschema --hidden-import jsonschema.validators --hidden-import jsonschema._validators --hidden-import jsonschema._legacy_validators --hidden-import jsonschema.exceptions analyze/__main__.py
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
