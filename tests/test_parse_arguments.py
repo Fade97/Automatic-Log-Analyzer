@@ -11,13 +11,13 @@ def test_no_log_file_exits(monkeypatch):
 def test_valid_log_file(monkeypatch):
     monkeypatch.setattr("sys.argv", ["analyze.py", "test.log"])
     args = parse_arguments()
-    assert args.log_file == "test.log"
+    assert args.log_files == ["test.log"]
 
 
-def test_default_criticality_is_high(monkeypatch):
+def test_default_criticality_is_low(monkeypatch):
     monkeypatch.setattr("sys.argv", ["analyze.py", "test.log"])
     args = parse_arguments()
-    assert args.criticality == "HIGH"
+    assert args.criticality == "LOW"
 
 
 def test_criticality_medium(monkeypatch):
