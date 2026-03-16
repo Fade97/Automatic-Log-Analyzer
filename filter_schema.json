@@ -1,57 +1,88 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.com/log-analyzer-filter-schema.json",
     "title": "Log Analyzer Filter Configuration",
-    "type": "array",
-    "minItems": 1,
-    "items": {
-        "type": "object",
-        "required": ["name", "filters", "criticality"],
-        "additionalProperties": false,
-        "properties": {
-            "name": {
-                "type": "string",
-                "minLength": 1,
-                "description": "Display name for the filter group"
-            },
-            "criticality": {
-                "type": "string",
-                "enum": ["low", "medium", "high"],
-                "description": "Severity level assigned to matches from this group"
-            },
-            "logic": {
-                "type": "string",
-                "enum": ["or", "and"],
-                "description": "Whether filters within the group use OR (any match) or AND (all must match) logic. Default: or"
-            },
-            "filters": {
-                "type": "array",
-                "minItems": 1,
-                "description": "One or more filter rules; a line matches the group based on the group's logic field",
-                "items": {
-                    "type": "object",
-                    "required": ["filter", "regex", "case_sensitive", "word_match"],
-                    "additionalProperties": false,
-                    "properties": {
-                        "filter": {
-                            "type": "string",
-                            "minLength": 1,
-                            "description": "Search string or regular expression pattern"
-                        },
-                        "regex": {
-                            "type": "boolean",
-                            "description": "If true, treat filter as a regular expression"
-                        },
-                        "case_sensitive": {
-                            "type": "boolean",
-                            "description": "If true, matching is case-sensitive"
-                        },
-                        "word_match": {
-                            "type": "boolean",
-                            "description": "If true, only match at word boundaries (\\b)"
-                        },
-                        "negate": {
-                            "type": "boolean",
-                            "description": "If true, match lines that do NOT contain the pattern"
+    "type": "object",
+    "required": [
+        "filters"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "Reference to the JSON schema"
+        },
+        "filters": {
+            "type": "array",
+            "description": "List of filter groups; a line is flagged if it matches any group",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "filters",
+                    "criticality"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Display name for the filter group"
+                    },
+                    "criticality": {
+                        "type": "string",
+                        "enum": [
+                            "low",
+                            "medium",
+                            "high"
+                        ],
+                        "description": "Severity level assigned to matches from this group"
+                    },
+                    "logic": {
+                        "type": "string",
+                        "enum": [
+                            "or",
+                            "and"
+                        ],
+                        "description": "Whether filters within the group use OR (any match) or AND (all must match) logic. Default: or"
+                    },
+                    "filters": {
+                        "type": "array",
+                        "minItems": 1,
+                        "description": "One or more filter rules; a line matches the group based on the group's logic field",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "filter",
+                                "regex",
+                                "case_sensitive",
+                                "word_match"
+                            ],
+                            "additionalProperties": false,
+                            "properties": {
+                                "filter": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "description": "Search string or regular expression pattern"
+                                },
+                                "regex": {
+                                    "type": "boolean",
+                                    "description": "If true, treat filter as a regular expression"
+                                },
+                                "case_sensitive": {
+                                    "type": "boolean",
+                                    "description": "If true, matching is case-sensitive"
+                                },
+                                "word_match": {
+                                    "type": "boolean",
+                                    "description": "If true, only match at word boundaries (\\b)"
+                                },
+                                "negate": {
+                                    "type": "boolean",
+                                    "description": "If true, match lines that do NOT contain the pattern"
+                                }
+                            }
                         }
                     }
                 }
