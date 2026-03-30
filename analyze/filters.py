@@ -74,8 +74,25 @@ def load_filters(filters_file):
     """
     with open(filters_file, "r") as f:
         data = json.load(f)
-    jsonschema.validate(data, _FILTER_SCHEMA)
-    filter_groups = data["filters"]  # Extract the filters array from the root object
+
+    # Support both legacy (list) and new (object) formats
+    if isinstance(data, list):
+        # Legacy/tests: root is a list of filter groups
+        legacy_schema = {
+            "type": "array",
+            "minItems": 1,
+            "items": _FILTER_SCHEMA["properties"]["filters"]["items"],
+        }
+        jsonschema.validate(data, legacy_schema)
+        filter_groups = data
+    elif isinstance(data, dict) and "filters" in data:
+        jsonschema.validate(data, _FILTER_SCHEMA)
+        filter_groups = data["filters"]
+    else:
+        raise jsonschema.ValidationError(
+            "Invalid filter config format: must be array or object with 'filters'."
+        )
+
     for group in filter_groups:
         for filt in group["filters"]:
             if filt["regex"]:
